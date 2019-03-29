@@ -3,5 +3,5 @@
  */
 module.exports = {
     token : "secret-starter-mern",
-    mongo_connection : "YOUR URL TO MONGODB"
+    mongo_connection : "mongodb+srv://legit_xinyi:itsFriday0329@cluster0-bjnl4.mongodb.net/test?retryWrites=true"
 };
