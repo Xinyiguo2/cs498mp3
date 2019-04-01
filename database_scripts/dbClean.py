@@ -27,6 +27,7 @@ def getUsers(conn):
     d = json.loads(data)
 
     # Array of user IDs
+    print(d)
     users = [str(d['data'][x]['_id']) for x in range(len(d['data']))]
 
     return users

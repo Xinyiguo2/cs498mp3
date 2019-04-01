@@ -15,24 +15,24 @@ module.exports = function (router) {
 
         if(where != undefined){
             where = JSON.parse(where);
-            console.log(where)
+            //console.log(where)
         }
         if(sort != undefined){
             sort = JSON.parse(sort);
-            console.log(sort)
+            //console.log(sort)
         }
         if(select != undefined){
             select = JSON.parse(select);
-            console.log(select)
+            //console.log(select)
         }
         if(skip === undefined){
             skip = 0;
-            console.log(skip)
+           //console.log(skip)
         }
         skip = parseInt(skip)
         if(limit === undefined){
             limit = 100;
-            console.log(limit)
+            //console.log(limit)
         }
         limit = parseInt(limit)
         if(count === undefined){
@@ -104,7 +104,7 @@ module.exports = function (router) {
     var specificUserRoute = router.route('/users/:user_id')
 
     specificUserRoute.get(function(req,res){
-        User.findById(req.params.user_id, function(err,user){
+        User.findOne({"_id":req.params.user_id}, function(err,user){
             if(err){
                 res.json({
                     message: "400 Bad Request",
@@ -130,7 +130,7 @@ module.exports = function (router) {
     })
 
     specificUserRoute.put(function(req,res){
-        User.findById(req.params.user_id,function(err, user){
+        User.findOne({"_id":req.params.user_id},function(err, user){
             if(err){
                 res.json({
                     message: "404 Bad Request",
@@ -166,7 +166,7 @@ module.exports = function (router) {
     })
 
     specificUserRoute.delete(function(req,res){
-        if(User.findByIdAndDelete(req.params.user_id, function(err, user){
+        User.findOneAndDelete({_id:req.params.user_id}, function(err, user){
             if(err){
                 res.json({
                     message: "404 not found",
@@ -193,7 +193,7 @@ module.exports = function (router) {
                     })
                 }
             }
-        }));
+        });
     })
 
     return router;
