@@ -50,7 +50,7 @@ module.exports = function (router) {
                 if(!users.length){
                     res.json({
                         message: "404 not Found",
-                        data: {users}
+                        data: users
                     })
                 }else{
                     if(count){
@@ -117,7 +117,7 @@ module.exports = function (router) {
                 if(user === null){
                     res.json({
                         message: "404 not found!",
-                        data: {user}
+                        data: user
                     })
                 }else{
                     res.json({
@@ -187,9 +187,7 @@ module.exports = function (router) {
                 }else{
                     res.json({
                         message: "200 OK",
-                        data:{
-                            user
-                        }
+                        data:user
                     })
                 }
             }
