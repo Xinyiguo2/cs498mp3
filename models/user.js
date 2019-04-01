@@ -5,7 +5,7 @@ var uniqueValidator = require('mongoose-unique-validator');
 var UserSchema = new mongoose.Schema({
     name: {type : String, required : 'Name can not be blank! '},
     email: {type: String, required : 'Email can not be blank',unique : true},
-    pendingTasks: [String],
+    pendingTasks: [{type : String, ref: 'Task'}],
     dateCreated: Date
 });
 UserSchema.plugin(uniqueValidator,{message: "is already exists"})

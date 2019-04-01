@@ -78,19 +78,116 @@ module.exports = function (router) {
         newTask.description = (req.body.description === undefined)? "": req.body.description;
         newTask.deadline = req.body.deadline;
         newTask.completed = (req.body.completed === undefined) ? false : req.body.completed;
+        newTask.dateCreated = Date.now();
         // newTask.assignedUser = (req.body.assignedUser === undefined)? "":req.body.assignedUser;
         // newTask.assignedUserName = (req.body.assignedUserName === undefined)? "unassigned":req.assignedUserName;
         if(req.body.assignedUser !== undefined && req.body.assignedUser !== "" && req.body.assignedUserName !== undefined && req.body.assignedUserName !== "unassigned"){
             newTask.assignedUserName = req.body.assignedUserName;
             newTask.assignedUser = req.body.assignedUser;
+            newTask.save(function(err){
+                if(err){
+                    res.json({
+                        message: "400 Bad Request",
+                        data :{
+                            "name" : req.body.name || "",
+                            "email": req.body.deadline || "",
+                            "error": err.message
+                        }
+                    })
+                }else{
+                    res.json({
+                        message: '201 Created!',
+                        data: {
+                            "_id":newTask._id,
+                            "name":newTask.name,
+                            "deadline":newTask.deadline,
+                            "description":newTask.description,
+                            "dateCreated": newTask.dateCreated,
+                            "assignedUser":newTask.assignedUser,
+                            "assignedUserName":newTask.assignedUserName,
+                            "completed": newTask.completed
+                        }
+                    })
+                }
+            });
+            if(newTask.assignedUser !== ""){
+                User.findOneAndUpdate({"_id":newTask.assignedUser},
+                {$addToSet:{pendingTasks:newTask._id}},
+                function(err,doc){
+                    if(err){
+                        console.log(err)
+                    }
+                })
+            }
         }else if(req.body.assignedUser !== undefined && req.body.assignedUser !== ""){
             newTask.assignedUser = req.body.assignedUser;
             User.findOne({"_id":newTask.assignedUser},function(err, user){
                 if(err || user === null){
                     newTask.assignedUser = "";
                     newTask.assignedUserName = "unassigned";
+                    newTask.save(function(err){
+                        if(err){
+                            res.json({
+                                message: "400 Bad Request",
+                                data :{
+                                    "name" : req.body.name || "",
+                                    "email": req.body.deadline || "",
+                                    "error": err.message
+                                }
+                            })
+                        }else{
+                            res.json({
+                                message: '201 Created!',
+                                data: {
+                                    "_id":newTask._id,
+                                    "name":newTask.name,
+                                    "deadline":newTask.deadline,
+                                    "description":newTask.description,
+                                    "dateCreated": newTask.dateCreated,
+                                    "assignedUser":newTask.assignedUser,
+                                    "assignedUserName":newTask.assignedUserName,
+                                    "completed": newTask.completed
+                                }
+                            })
+                        }
+                    });
                 }else{
                     newTask.assignedUserName = user.name;
+                    newTask.save(function(err){
+                        if(err){
+                            res.json({
+                                message: "400 Bad Request",
+                                data :{
+                                    "name" : req.body.name || "",
+                                    "email": req.body.deadline || "",
+                                    "error": err.message
+                                }
+                            })
+                        }else{
+                            res.json({
+                                message: '201 Created!',
+                                data: {
+                                    "_id":newTask._id,
+                                    "name":newTask.name,
+                                    "deadline":newTask.deadline,
+                                    "description":newTask.description,
+                                    "dateCreated": newTask.dateCreated,
+                                    "assignedUser":newTask.assignedUser,
+                                    "assignedUserName":newTask.assignedUserName,
+                                    "completed": newTask.completed
+                                }
+                            })
+                        }
+                    });
+                    if(newTask.assignedUser !== ""){
+                        User.findOneAndUpdate({"_id":newTask.assignedUser},
+                        {$addToSet:{pendingTasks:newTask._id}},
+                        function(err,doc){
+                            if(err){
+                                console.log(err)
+                            }
+                        })
+                    }
                 }
             })
         }else if(req.body.assignedUserName !== undefined && req.body.assignedUserName !== "unassigned"){
@@ -99,50 +196,103 @@ module.exports = function (router) {
                 if(err || user === null){
                     newTask.assignedUser = "";
                     newTask.assignedUserName = "unassigned";
+                    newTask.save(function(err){
+                        if(err){
+                            res.json({
+                                message: "400 Bad Request",
+                                data :{
+                                    "name" : req.body.name || "",
+                                    "email": req.body.deadline || "",
+                                    "error": err.message
+                                }
+                            })
+                        }else{
+                            res.json({
+                                message: '201 Created!',
+                                data: {
+                                    "_id":newTask._id,
+                                    "name":newTask.name,
+                                    "deadline":newTask.deadline,
+                                    "description":newTask.description,
+                                    "dateCreated": newTask.dateCreated,
+                                    "assignedUser":newTask.assignedUser,
+                                    "assignedUserName":newTask.assignedUserName,
+                                    "completed": newTask.completed
+                                }
+                            })
+                        }
+                    });
                 }else{
                     newTask.assignedUser = user._id;
+                    newTask.save(function(err){
+                        if(err){
+                            res.json({
+                                message: "400 Bad Request",
+                                data :{
+                                    "name" : req.body.name || "",
+                                    "email": req.body.deadline || "",
+                                    "error": err.message
+                                }
+                            })
+                        }else{
+                            res.json({
+                                message: '201 Created!',
+                                data: {
+                                    "_id":newTask._id,
+                                    "name":newTask.name,
+                                    "deadline":newTask.deadline,
+                                    "description":newTask.description,
+                                    "dateCreated": newTask.dateCreated,
+                                    "assignedUser":newTask.assignedUser,
+                                    "assignedUserName":newTask.assignedUserName,
+                                    "completed": newTask.completed
+                                }
+                            })
+                        }
+                    });
+                    if(newTask.assignedUser !== ""){
+                        User.findOneAndUpdate({"_id":newTask.assignedUser},
+                        {$addToSet:{pendingTasks:newTask._id}},
+                        function(err,doc){
+                            if(err){
+                                console.log(err)
+                            }
+                        })
+                    }
                 }
             })
         }else{
             newTask.assignedUser = "";
             newTask.assignedUserName = "unassigned";
-        }
-        newTask.dateCreated = Date.now();
-        newTask.save(function(err){
-            if(err){
-                res.json({
-                    message: "400 Bad Request",
-                    data :{
-                        "name" : req.body.name || "",
-                        "email": req.body.deadline || "",
-                        "error": err.message
-                    }
-                })
-            }else{
-                res.json({
-                    message: '201 Created!',
-                    data: {
-                        "_id":newTask._id,
-                        "name":newTask.name,
-                        "deadline":newTask.deadline,
-                        "description":newTask.description,
-                        "dateCreated": newTask.dateCreated,
-                        "assignedUser":newTask.assignedUser,
-                        "assignedUserName":newTask.assignedUserName,
-                        "completed": newTask.completed
-                    }
-                })
-            }
-        });
-        if(newTask.assignedUser !== ""){
-            User.findOneAndUpdate({"_id":newTask.assignedUser},
-            {$addToSet:{pendingTasks:newTask._id}},
-            function(err,doc){
+            newTask.save(function(err){
                 if(err){
-                    console.log(err)
+                    res.json({
+                        message: "400 Bad Request",
+                        data :{
+                            "name" : req.body.name || "",
+                            "email": req.body.deadline || "",
+                            "error": err.message
+                        }
+                    })
+                }else{
+                    res.json({
+                        message: '201 Created!',
+                        data: {
+                            "_id":newTask._id,
+                            "name":newTask.name,
+                            "deadline":newTask.deadline,
+                            "description":newTask.description,
+                            "dateCreated": newTask.dateCreated,
+                            "assignedUser":newTask.assignedUser,
+                            "assignedUserName":newTask.assignedUserName,
+                            "completed": newTask.completed
+                        }
+                    })
                 }
-            })
+            });
         }
+
+
     })
 
     var specificTaskRoute = router.route('/tasks/:task_id')
@@ -185,57 +335,6 @@ module.exports = function (router) {
                 });
             }else{
                 var oldName  = task.assignedUser;
-                task.name = req.body.name;
-                task.description = (req.body.description === undefined)? "":req.body.description;
-                task.deadline = req.body.deadline;
-                task.completed = (req.body.completed === undefined)? false:req.body.completed;
-                //task.assignedUser = (req.body.assignedUser === undefined)? "":req.body.assignedUser;
-                //task.assignedUserName = (req.body.assignedUserName === undefined)? "unassigned":req.body.assignedUserName;
-                if(req.body.assignedUser !== undefined && req.body.assignedUser !== "" && req.body.assignedUserName !== undefined && req.body.assignedUserName !== ""){
-                    task.assignedUserName = req.body.assignedUserName;
-                    task.assignedUser = req.body.assignedUser;
-                }else if(req.body.assignedUser !== undefined && req.body.assignedUser !== ""){
-                    task.assignedUser = req.body.assignedUser;
-                    User.findOne({"_id":task.assignedUser},function(err,user){
-                        if(err || user === null){
-                            task.assignedUser = "";
-                            task.assignedUserName = "unassigned";
-                        }else{
-                            task.assignedUserName = user.name;
-                        }
-                    })
-                }else if(req.body.assignedUserName !== undefined && req.body.assignedUserName !== "unassigned"){
-                    task.assignedUserName = req.body.assignedUserName;
-                    User.findOne({"name":task.assignedUserName},function(err, user){
-                        if(err || user === null){
-                            task.assignedUser = "";
-                            task.assignedUserName = "unassigned";
-                        }else{
-                            task.assignedUser = user._id;
-                        }
-                    })
-                }else{
-                    task.assignedUserName = "unassigned";
-                    task.assignedUser = "";
-                }
-                task.dateCreated = Date.now();
-                task.save(function(err){
-                    if(err){
-                        res.json({
-                            message: "400 Bad Request",
-                            data:{
-                                "name":req.body.name || "",
-                                "email":req.body.deadline || "",
-                                error: err.message
-                            }
-                        })
-                    }else{
-                        res.json({
-                            message : '201 Created!',
-                            data: task,
-                        })
-                    }
-                });
                 if(oldName !== ""){
                     User.findOneAndUpdate({"_id":oldName},
                     {$pull:{pendingTasks:task._id}},
@@ -245,14 +344,159 @@ module.exports = function (router) {
                         }
                     })
                 }
-                if(req.body.assignedUser !== "" && req.body.assignedUser !== undefined){
-                    User.findOneAndUpdate({"_id":req.body.assignedUser},
-                    {$push:{pendingTasks:task._id}},
-                    function(err,doc){
+                task.name = req.body.name;
+                task.description = (req.body.description === undefined)? "":req.body.description;
+                task.deadline = req.body.deadline;
+                task.completed = (req.body.completed === undefined)? false:req.body.completed;
+                task.dateCreated = Date.now();
+                //task.assignedUser = (req.body.assignedUser === undefined)? "":req.body.assignedUser;
+                //task.assignedUserName = (req.body.assignedUserName === undefined)? "unassigned":req.body.assignedUserName;
+                if(req.body.assignedUser !== undefined && req.body.assignedUser !== "" && req.body.assignedUserName !== undefined && req.body.assignedUserName !== ""){
+                    task.assignedUserName = req.body.assignedUserName;
+                    task.assignedUser = req.body.assignedUser;
+                    task.save(function(err){
                         if(err){
-                            console.log(err)
+                            res.json({
+                                message: "400 Bad Request",
+                                data:{
+                                    "name":req.body.name || "",
+                                    "email":req.body.deadline || "",
+                                    error: err.message
+                                }
+                            })
+                        }else{
+                            res.json({
+                                message : '201 Created!',
+                                data: task,
+                            })
+                        }
+                    });
+                }else if(req.body.assignedUser !== undefined && req.body.assignedUser !== ""){
+                    task.assignedUser = req.body.assignedUser;
+                    User.findOne({"_id":task.assignedUser},function(err,user){
+                        if(err || user === null){
+                            task.assignedUser = "";
+                            task.assignedUserName = "unassigned";
+                            task.save(function(err){
+                                if(err){
+                                    res.json({
+                                        message: "400 Bad Request",
+                                        data:{
+                                            "name":req.body.name || "",
+                                            "email":req.body.deadline || "",
+                                            error: err.message
+                                        }
+                                    })
+                                }else{
+                                    res.json({
+                                        message : '201 Created!',
+                                        data: task,
+                                    })
+                                }
+                            });
+                        }else{
+                            task.assignedUserName = user.name;
+                            task.save(function(err){
+                                if(err){
+                                    res.json({
+                                        message: "400 Bad Request",
+                                        data:{
+                                            "name":req.body.name || "",
+                                            "email":req.body.deadline || "",
+                                            error: err.message
+                                        }
+                                    })
+                                }else{
+                                    res.json({
+                                        message : '201 Created!',
+                                        data: task,
+                                    })
+                                }
+                            });
+                            if(task.assignedUser !== "" && task.assignedUser!== undefined){
+                                User.findOneAndUpdate({"_id":task.assignedUser},
+                                {$addToSet:{pendingTasks:task._id}},
+                                function(err,doc){
+                                    if(err){
+                                        console.log(err)
+                                    }
+                                })
+                            }
                         }
                     })
+                }else if(req.body.assignedUserName !== undefined && req.body.assignedUserName !== "unassigned"){
+                    task.assignedUserName = req.body.assignedUserName;
+                    User.findOne({"name":task.assignedUserName},function(err, user){
+                        if(err || user === null){
+                            task.assignedUser = "";
+                            task.assignedUserName = "unassigned";
+                            task.save(function(err){
+                                if(err){
+                                    res.json({
+                                        message: "400 Bad Request",
+                                        data:{
+                                            "name":req.body.name || "",
+                                            "email":req.body.deadline || "",
+                                            error: err.message
+                                        }
+                                    })
+                                }else{
+                                    res.json({
+                                        message : '201 Created!',
+                                        data: task,
+                                    })
+                                }
+                            });
+                        }else{
+                            task.assignedUser = user._id;
+                            task.save(function(err){
+                                if(err){
+                                    res.json({
+                                        message: "400 Bad Request",
+                                        data:{
+                                            "name":req.body.name || "",
+                                            "email":req.body.deadline || "",
+                                            error: err.message
+                                        }
+                                    })
+                                }else{
+                                    res.json({
+                                        message : '201 Created!',
+                                        data: task,
+                                    })
+                                }
+                            });
+                            if(task.assignedUser !== "" && task.assignedUser!== undefined){
+                                User.findOneAndUpdate({"_id":task.assignedUser},
+                                {$addToSet:{pendingTasks:task._id}},
+                                function(err,doc){
+                                    if(err){
+                                        console.log(err)
+                                    }
+                                })
+                            }
+                        }
+                    })
+                }else{
+                    task.assignedUserName = "unassigned";
+                    task.assignedUser = "";
+                    task.save(function(err){
+                        if(err){
+                            res.json({
+                                message: "400 Bad Request",
+                                data:{
+                                    "name":req.body.name || "",
+                                    "email":req.body.deadline || "",
+                                    error: err.message
+                                }
+                            })
+                        }else{
+                            res.json({
+                                message : '201 Created!',
+                                data: task,
+                            })
+                        }
+                    });
                 }
             }
         });

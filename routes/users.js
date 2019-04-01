@@ -1,4 +1,5 @@
 let User = require('../models/user')
+let Task = require('../models/task')
 
 module.exports = function (router) {
 
@@ -140,6 +141,9 @@ module.exports = function (router) {
                     }
                 });
             }else{
+                Task.deleteMany({"assignedUserName":user.name},function(err){
+                    console.log(err);
+                })
                 user.name = req.body.name;
                 user.email = req.body.email;
                 user.dateCreated = Date.now();
@@ -161,6 +165,7 @@ module.exports = function (router) {
                         })
                     }
                 });
+
             }
         });
     })
@@ -185,6 +190,11 @@ module.exports = function (router) {
                         }
                     })
                 }else{
+                    Task.deleteMany({assignedUser:user._id},function(err){
+                        if(err){
+                            console.log(err)
+                        }
+                    })
                     res.json({
                         message: "200 OK",
                         data:user
