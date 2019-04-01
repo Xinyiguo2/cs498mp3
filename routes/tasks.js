@@ -78,8 +78,35 @@ module.exports = function (router) {
         newTask.description = (req.body.description === undefined)? "": req.body.description;
         newTask.deadline = req.body.deadline;
         newTask.completed = (req.body.completed === undefined) ? false : req.body.completed;
-        newTask.assignedUser = (req.body.assignedUser === undefined)? "":req.body.assignedUser;
-        newTask.assignedUserName = (req.body.assignedUserName === undefined)? "unassigned":req.assignedUserName;
+        // newTask.assignedUser = (req.body.assignedUser === undefined)? "":req.body.assignedUser;
+        // newTask.assignedUserName = (req.body.assignedUserName === undefined)? "unassigned":req.assignedUserName;
+        if(req.body.assignedUser !== undefined && req.body.assignedUser !== "" && req.body.assignedUserName !== undefined && req.body.assignedUserName !== "unassigned"){
+            newTask.assignedUserName = req.body.assignedUserName;
+            newTask.assignedUser = req.body.assignedUser;
+        }else if(req.body.assignedUser !== undefined && req.body.assignedUser !== ""){
+            newTask.assignedUser = req.body.assignedUser;
+            User.findOne({"_id":newTask.assignedUser},function(err, user){
+                if(err || user === null){
+                    newTask.assignedUser = "";
+                    newTask.assignedUserName = "unassigned";
+                }else{
+                    newTask.assignedUserName = user.name;
+                }
+            })
+        }else if(req.body.assignedUserName !== undefined && req.body.assignedUserName !== "unassigned"){
+            newTask.assignedUserName = req.body.assignedUserName;
+            User.findOne({"name":newTask.assignedUserName},function(err,user){
+                if(err || user === null){
+                    newTask.assignedUser = "";
+                    newTask.assignedUserName = "unassigned";
+                }else{
+                    newTask.assignedUser = user._id;
+                }
+            })
+        }else{
+            newTask.assignedUser = "";
+            newTask.assignedUserName = "unassigned";
+        }
         newTask.dateCreated = Date.now();
         newTask.save(function(err){
             if(err){
@@ -107,6 +134,15 @@ module.exports = function (router) {
                 })
             }
         });
+        if(newTask.assignedUser !== ""){
+            User.findOneAndUpdate({"_id":newTask.assignedUser},
+            {$addToSet:{pendingTasks:newTask._id}},
+            function(err,doc){
+                if(err){
+                    console.log(err)
+                }
+            })
+        }
     })
 
     var specificTaskRoute = router.route('/tasks/:task_id')
@@ -148,12 +184,40 @@ module.exports = function (router) {
                     }
                 });
             }else{
+                var oldName  = task.assignedUser;
                 task.name = req.body.name;
                 task.description = (req.body.description === undefined)? "":req.body.description;
                 task.deadline = req.body.deadline;
                 task.completed = (req.body.completed === undefined)? false:req.body.completed;
-                task.assignedUser = (req.body.assignedUser === undefined)? "":req.body.assignedUser;
-                task.assignedUserName = (req.body.assignedUserName === undefined)? "unassigned":req.body.assignedUserName;
+                //task.assignedUser = (req.body.assignedUser === undefined)? "":req.body.assignedUser;
+                //task.assignedUserName = (req.body.assignedUserName === undefined)? "unassigned":req.body.assignedUserName;
+                if(req.body.assignedUser !== undefined && req.body.assignedUser !== "" && req.body.assignedUserName !== undefined && req.body.assignedUserName !== ""){
+                    task.assignedUserName = req.body.assignedUserName;
+                    task.assignedUser = req.body.assignedUser;
+                }else if(req.body.assignedUser !== undefined && req.body.assignedUser !== ""){
+                    task.assignedUser = req.body.assignedUser;
+                    User.findOne({"_id":task.assignedUser},function(err,user){
+                        if(err || user === null){
+                            task.assignedUser = "";
+                            task.assignedUserName = "unassigned";
+                        }else{
+                            task.assignedUserName = user.name;
+                        }
+                    })
+                }else if(req.body.assignedUserName !== undefined && req.body.assignedUserName !== "unassigned"){
+                    task.assignedUserName = req.body.assignedUserName;
+                    User.findOne({"name":task.assignedUserName},function(err, user){
+                        if(err || user === null){
+                            task.assignedUser = "";
+                            task.assignedUserName = "unassigned";
+                        }else{
+                            task.assignedUser = user._id;
+                        }
+                    })
+                }else{
+                    task.assignedUserName = "unassigned";
+                    task.assignedUser = "";
+                }
                 task.dateCreated = Date.now();
                 task.save(function(err){
                     if(err){
@@ -172,6 +236,24 @@ module.exports = function (router) {
                         })
                     }
                 });
+                if(oldName !== ""){
+                    User.findOneAndUpdate({"_id":oldName},
+                    {$pull:{pendingTasks:task._id}},
+                    function(err,doc){
+                        if(err){
+                            console.log(err)
+                        }
+                    })
+                }
+                if(req.body.assignedUser !== "" && req.body.assignedUser !== undefined){
+                    User.findOneAndUpdate({"_id":req.body.assignedUser},
+                    {$push:{pendingTasks:task._id}},
+                    function(err,doc){
+                        if(err){
+                            console.log(err)
+                        }
+                    })
+                }
             }
         });
     })
@@ -196,6 +278,16 @@ module.exports = function (router) {
                         }
                     })
                 }else{
+                    var user = task.assignedUser;
+                    if(user !== ""){
+                        User.findOneAndUpdate({"_id":user},
+                        {$pull:{pendingTasks:task._id}},
+                        function(err, doc){
+                            if(err){
+                                console.log(err)
+                            }
+                        })
+                    }
                     res.json({
                         message: "200 OK",
                         data:task
