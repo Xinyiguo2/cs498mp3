@@ -56,14 +56,14 @@ module.exports = function (router) {
                 }else{
                     if(count){
                         res.json({
-                            message: "200 OK",
+                            message: "200 Success",
                             data: {
                                 count : users.length
                             }
                         })
                     }else{
                         res.json({
-                            message: "200 OK",
+                            message: "200 Success",
                             data: users
                         });
                     }
@@ -122,7 +122,7 @@ module.exports = function (router) {
                     })
                 }else{
                     res.json({
-                        message: "200 OK",
+                        message: "200 Success",
                         data: user
                     })
                 }
@@ -196,7 +196,7 @@ module.exports = function (router) {
                         }
                     })
                     res.json({
-                        message: "200 OK",
+                        message: "200 Success",
                         data:user
                     })
                 }
