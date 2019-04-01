@@ -50,7 +50,7 @@ module.exports = function (router) {
                 if(!users.length){
                     res.json({
                         message: "404 not Found",
-                        data: users
+                        data: {users}
                     })
                 }else{
                     if(count){
@@ -89,7 +89,13 @@ module.exports = function (router) {
             }else{
                 res.json({
                     message: '201 Created!',
-                    data: {newUser}
+                    data: {
+                        "_id":newUser._id,
+                        "name":newUser.name,
+                        "email":newUser.email,
+                        "pendingTasks":newUser.pendingTasks,
+                        "dateCreated": newUser.dateCreated
+                    }
                 })
             }
         });

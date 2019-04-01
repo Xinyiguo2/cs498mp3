@@ -93,6 +93,8 @@ def main(argv):
         d = json.loads(data)
 
         # Store the users id
+        print(d)
+        #print(d['data']['newUser']['email'])
         userIDs.append(str(d['data']['_id']))
         userNames.append(str(d['data']['name']))
         userEmails.append(str(d['data']['email']))
@@ -120,7 +122,7 @@ def main(argv):
         response = conn.getresponse()
         data = response.read()
         d = json.loads(data)
-
+        #print(d)
         taskID = str(d['data']['_id'])
 
         # Make sure the task is added to the pending list of the user
