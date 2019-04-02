@@ -413,7 +413,7 @@ module.exports = function (router) {
                             });
                         }else{
                             task.assignedUserName = user.name;
-                            task.save(function(err){
+                            task.save(function(err,task){
                                 if(err){
                                     res.json({
                                         message: "400 Bad Request",
@@ -424,21 +424,19 @@ module.exports = function (router) {
                                         }
                                     })
                                 }else{
+                                    User.findOneAndUpdate({"_id":task.assignedUser},
+                                    {$addToSet:{pendingTasks:task._id}},
+                                    function(err,user){
+                                        if(err){
+                                            console.log(err)
+                                        }
+                                    })
                                     res.json({
                                         message : '201 Created!',
                                         data: task,
                                     })
                                 }
                             });
-                            if(task.assignedUser !== "" && task.assignedUser!== undefined){
-                                User.findOneAndUpdate({"_id":task.assignedUser},
-                                {$addToSet:{pendingTasks:task._id}},
-                                function(err,doc){
-                                    if(err){
-                                        console.log(err)
-                                    }
-                                })
-                            }
                         }
                     })
                 }else if(req.body.assignedUserName !== undefined && req.body.assignedUserName !== "unassigned"){
@@ -466,7 +464,7 @@ module.exports = function (router) {
                             });
                         }else{
                             task.assignedUser = user._id;
-                            task.save(function(err){
+                            task.save(function(err,task){
                                 if(err){
                                     res.json({
                                         message: "400 Bad Request",
@@ -477,21 +475,17 @@ module.exports = function (router) {
                                         }
                                     })
                                 }else{
+                                    User.findOneAndUpdate({"_id":task.assignedUser},
+                                    {$addToSet:{pendingTasks:task._id}},
+                                    function(err){
+                                        console.log(err)
+                                    })
                                     res.json({
                                         message : '201 Created!',
                                         data: task,
                                     })
                                 }
                             });
-                            if(task.assignedUser !== "" && task.assignedUser!== undefined){
-                                User.findOneAndUpdate({"_id":task.assignedUser},
-                                {$addToSet:{pendingTasks:task._id}},
-                                function(err,doc){
-                                    if(err){
-                                        console.log(err)
-                                    }
-                                })
-                            }
                         }
                     })
                 }else{
