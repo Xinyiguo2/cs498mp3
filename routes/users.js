@@ -141,13 +141,10 @@ module.exports = function (router) {
                     }
                 });
             }else{
-                Task.deleteMany({"assignedUserName":user.name},function(err){
-                    console.log(err);
-                })
                 user.name = req.body.name;
                 user.email = req.body.email;
                 user.dateCreated = Date.now();
-                user.pendingTasks = [];
+                user.pendingTasks = (req.body.pendingTasks === undefined)? []:req.body.pendingTasks;
                 user.save(function(err){
                     if(err){
                         res.json({
