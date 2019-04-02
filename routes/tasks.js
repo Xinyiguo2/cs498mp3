@@ -79,13 +79,12 @@ module.exports = function (router) {
         newTask.deadline = req.body.deadline;
         newTask.completed = (req.body.completed === undefined) ? false : req.body.completed;
         newTask.dateCreated = Date.now();
-        // newTask.assignedUser = (req.body.assignedUser === undefined)? "":req.body.assignedUser;
-        // newTask.assignedUserName = (req.body.assignedUserName === undefined)? "unassigned":req.assignedUserName;
         if(req.body.assignedUser !== undefined && req.body.assignedUser !== "" && req.body.assignedUserName !== undefined && req.body.assignedUserName !== "unassigned"){
             newTask.assignedUserName = req.body.assignedUserName;
             newTask.assignedUser = req.body.assignedUser;
-            newTask.save(function(err){
+            newTask.save(function(err,task){
                 if(err){
+                    console.log("failed with applied name  and id ")
                     res.json({
                         message: "400 Bad Request",
                         data :{
@@ -95,9 +94,23 @@ module.exports = function (router) {
                         }
                     })
                 }else{
+                    User.findOneAndUpdate({"_id":task.assignedUser},
+                    {$addToSet:{"pendingTasks":task._id}},{new:true},
+                    function(err,user){
+                        if(err){
+                            console.log(err)
+                        }else{
+                            user.save(function(err){
+                                console.log(err)
+                            })
+                            console.log(user)
+                        }
+                    })
+                }
                     res.json({
                         message: '201 Created!',
                         data: {
+                            
                             "_id":newTask._id,
                             "name":newTask.name,
                             "deadline":newTask.deadline,
@@ -109,24 +122,16 @@ module.exports = function (router) {
                         }
                     })
                 }
-            });
-            if(newTask.assignedUser !== ""){
-                User.findOneAndUpdate({"_id":newTask.assignedUser},
-                {$addToSet:{pendingTasks:newTask._id}},
-                function(err,doc){
-                    if(err){
-                        console.log(err)
-                    }
-                })
-            }
+            );
         }else if(req.body.assignedUser !== undefined && req.body.assignedUser !== ""){
             newTask.assignedUser = req.body.assignedUser;
             User.findOne({"_id":newTask.assignedUser},function(err, user){
                 if(err || user === null){
                     newTask.assignedUser = "";
                     newTask.assignedUserName = "unassigned";
-                    newTask.save(function(err){
+                    newTask.save(function(err,task){
                         if(err){
+                            console.log("failed with applied id and not found the user")
                             res.json({
                                 message: "400 Bad Request",
                                 data :{
@@ -153,8 +158,9 @@ module.exports = function (router) {
                     });
                 }else{
                     newTask.assignedUserName = user.name;
-                    newTask.save(function(err){
+                    newTask.save(function(err,task){
                         if(err){
+                            console.log("failed with applied id  and found the user")
                             res.json({
                                 message: "400 Bad Request",
                                 data :{
@@ -164,9 +170,23 @@ module.exports = function (router) {
                                 }
                             })
                         }else{
+                            User.findOneAndUpdate({"_id":task.assignedUser},
+                            {$addToSet:{"pendingTasks":task._id}},
+                            {new:true},
+                            function(err,u){
+                                if(err){
+                                    console.log("user updated? ")
+                                }else{
+                                    u.save(function(err){
+                                        console.log(err)
+                                    })
+                                    console.log(u)
+                                }
+                            })
+                        }
                             res.json({
                                 message: '201 Created!',
-                                data: {
+                                data: { 
                                     "_id":newTask._id,
                                     "name":newTask.name,
                                     "deadline":newTask.deadline,
@@ -178,16 +198,7 @@ module.exports = function (router) {
                                 }
                             })
                         }
-                    });
-                    if(newTask.assignedUser !== ""){
-                        User.findOneAndUpdate({"_id":newTask.assignedUser},
-                        {$addToSet:{pendingTasks:newTask._id}},
-                        function(err,doc){
-                            if(err){
-                                console.log(err)
-                            }
-                        })
-                    }
+                    );
                 }
             })
         }else if(req.body.assignedUserName !== undefined && req.body.assignedUserName !== "unassigned"){
@@ -196,8 +207,9 @@ module.exports = function (router) {
                 if(err || user === null){
                     newTask.assignedUser = "";
                     newTask.assignedUserName = "unassigned";
-                    newTask.save(function(err){
+                    newTask.save(function(err,task){
                         if(err){
+                            console.log("failed with applied name and  not found the user")
                             res.json({
                                 message: "400 Bad Request",
                                 data :{
@@ -224,8 +236,9 @@ module.exports = function (router) {
                     });
                 }else{
                     newTask.assignedUser = user._id;
-                    newTask.save(function(err){
+                    newTask.save(function(err,task){
                         if(err){
+                            console.log("failed with applied name and found the user")
                             res.json({
                                 message: "400 Bad Request",
                                 data :{
@@ -235,6 +248,20 @@ module.exports = function (router) {
                                 }
                             })
                         }else{
+                            User.findOneAndUpdate({"_id":task.assignedUser},
+                            {$addToSet:{"pendingTasks":task._id}},
+                            {new:true},
+                            function(err,user){
+                                if(err){
+                                    console.log(err)
+                                }else{
+                                    user.save(function(err){
+                                        console.log(err)
+                                    })
+                                    console.log(user)
+                                }
+                            })
+                        }
                             res.json({
                                 message: '201 Created!',
                                 data: {
@@ -249,23 +276,15 @@ module.exports = function (router) {
                                 }
                             })
                         }
-                    });
-                    if(newTask.assignedUser !== ""){
-                        User.findOneAndUpdate({"_id":newTask.assignedUser},
-                        {$addToSet:{pendingTasks:newTask._id}},
-                        function(err,doc){
-                            if(err){
-                                console.log(err)
-                            }
-                        })
-                    }
+                    );
                 }
             })
         }else{
             newTask.assignedUser = "";
             newTask.assignedUserName = "unassigned";
-            newTask.save(function(err){
+            newTask.save(function(err,task){
                 if(err){
+                    console.log("failed with not applied name nor id")
                     res.json({
                         message: "400 Bad Request",
                         data :{
@@ -291,9 +310,7 @@ module.exports = function (router) {
                 }
             });
         }
-
-
-    })
+})
 
     var specificTaskRoute = router.route('/tasks/:task_id')
 

@@ -4,7 +4,7 @@ module.exports = function (router) {
 
     var homeRoute = router.route('/');
 
-    homeRoute.get().exec(function (req, res) {
+    homeRoute.get(function (req, res) {
         var connectionString = secrets.token;
         if(connectionString === undefined){
             res.json({
