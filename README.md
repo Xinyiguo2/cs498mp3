@@ -1,22 +1,22 @@
 # MP #3: APIed Piper
 ### Due: April 1st, 2019, 11.59PM CDT
 
-### Xinyi's design 
+#Xinyi's design 
 ## users: get / post 
-# whenever posting a new users, the user is expected to be a totally new one and should not have any pendingTasks
+### whenever posting a new users, the user is expected to be a totally new one and should not have any pendingTasks
 ## users:id: get / put / delete
-# when update a user, clear all tasks taht related to the person to "unassigned"
-# check if provided any pendingTasks, if so, update the pending task to the provided one, and update each tasks to assigned to the new person 
-# if not, check if the new name is the same or not 
-# if it is, set pendingtasks to the previous one, update tasks to be assigned to the new eprson 
-# if not, set pendingtasks to be empty 
-# when delete a user, set all related tasks to be "unassigned"
+### when update a user, clear all tasks taht related to the person to "unassigned"
+### check if provided any pendingTasks, if so, update the pending task to the provided one, and update each tasks to assigned to the new person 
+### if not, check if the new name is the same or not 
+### if it is, set pendingtasks to the previous one, update tasks to be assigned to the new eprson 
+### if not, set pendingtasks to be empty 
+### when delete a user, set all related tasks to be "unassigned"
 
 ##tasks : get / post
-# whenever inset a new task, find the corresponding person, if the person exists, set to that person, if not, set to "unassigned"
+### whenever inset a new task, find the corresponding person, if the person exists, set to that person, if not, set to "unassigned"
 ## tasks:id : get/put/delete 
-# when update a task, remove it from the old person's array, then set to the new person's array 
-# when delete a task, remove it from the old person's array
+### when update a task, remove it from the old person's array, then set to the new person's array 
+### when delete a task, remove it from the old person's array
 
 
 ## Table of Contents
