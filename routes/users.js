@@ -20,7 +20,7 @@ module.exports = function (router) {
         }
         if(sort != undefined){
             sort = JSON.parse(sort);
-            //console.log(sort)
+            //console.log(sort) 
         }
         if(select != undefined){
             select = JSON.parse(select);
