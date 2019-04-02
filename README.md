@@ -1,6 +1,11 @@
 # MP #3: APIed Piper
 ### Due: April 1st, 2019, 11.59PM CDT
 
+-- todo :
+- when users deleted, change those events to be unassigned 
+- when delete a task, update the corresponding user's array
+- helpful return messges 
+
 ## Table of Contents
 1. [Assignment](#assignment)
 2. [Tips](#tips)

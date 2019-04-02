@@ -141,11 +141,24 @@ module.exports = function (router) {
                     }
                 });
             }else{
+                var oldName = user.name
+                var oldPendingTasks = user.pendingTasks
                 user.name = req.body.name;
                 user.email = req.body.email;
                 user.dateCreated = Date.now();
-                user.pendingTasks = (req.body.pendingTasks === undefined)? []:req.body.pendingTasks;
-                user.save(function(err){
+                if(req.body.pendingTasks === undefined){
+                    user.pendingTasks = (req.body.name === oldName)? oldPendingTasks: [] 
+                }else{
+                    user.pendingTasks = req.body.pendingTasks
+                }
+                //if updateing to a new user, clear the previous user's tasks 
+                Task.updateMany({"assignedUser":user._id},{$set:{assignedUser:"",assignedUserName : "unassigned"}},function(err,doc){
+                    if(err){
+                        console.log(err)
+                    }
+                })
+                //user.pendingTasks = (req.body.pendingTasks === undefined)? []:req.body.pendingTasks;
+                user.save(function(err,user){
                     if(err){
                         res.json({
                             message: "400 Bad Request",
@@ -156,13 +169,22 @@ module.exports = function (router) {
                             }
                         })
                     }else{
+                        var currentTask = user.pendingTasks
+                        currentTask.forEach(function(taskID){
+                            Task.updateOne({"_id":taskID},
+                            {$set:{assignedUser:user._id, assignedUserName:user.name}},
+                            function(err,ta){
+                                if(err){
+                                    console.log(err)
+                                }
+                            })
+                        })
                         res.json({
                             message : '201 Created!',
                             data: user,
                         })
                     }
                 });
-
             }
         });
     })
@@ -187,7 +209,7 @@ module.exports = function (router) {
                         }
                     })
                 }else{
-                    Task.deleteMany({assignedUser:user._id},function(err){
+                    Task.updateMany({assignedUser:user._id},{$set:{assignedUser:"",assignedUserName:"unassigned"}},function(err){
                         if(err){
                             console.log(err)
                         }
