@@ -19,6 +19,9 @@
 ### when delete a task, remove it from the old person's array
 
 
+# might be good to have
+- when update users, check if the task has already been assgned
+
 ## Table of Contents
 1. [Assignment](#assignment)
 2. [Tips](#tips)
