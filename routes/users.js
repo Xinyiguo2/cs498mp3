@@ -76,8 +76,9 @@ module.exports = function (router) {
         var newUser = new User();
         newUser.name = req.body.name;
         newUser.email = req.body.email;
+        newUser.pendingTasks = (req.body.pendingTasks === undefined)? []:req.body.pendingTasks;
         newUser.dateCreated = Date.now();
-        newUser.save(function(err){
+        newUser.save(function(err,user){
             if(err){
                 res.json({
                     message: "400 Bad Request",
@@ -88,6 +89,16 @@ module.exports = function (router) {
                     }
                 })
             }else{
+                var currentTasks = user.pendingTasks;
+                currentTasks.forEach(function(taskId){
+                    Task.updateOne({"_id":taskId},
+                    {$set:{assignedUser:user._id,assignedUserName:user.name}},
+                    function(err,t){
+                        if(err){
+                            console.log(err)
+                        }
+                    })
+                })
                 res.json({
                     message: '201 Created!',
                     data: {
